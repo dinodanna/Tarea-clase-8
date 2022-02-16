@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible'>
+    <title>Tarea Clase 6</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='tarea-clase-6.css'>
+</head>
+
+<header>Bienvenido</header>
+
+<body>
+    
+    <label>Ingrese la cantidad de integrantes de su familia</label>
+    <form id="calculo-integrantes" onsubmit="return false">
+        <input type="number" id="numero-familiares"></input>
+        <input type="submit" name="boton-aceptar" value="Aceptar"> </input>
+    </form>
+
+    <input type="button" value="Calcular edades" id="boton-calcular" class="oculto"/>
+    
+    <div id="errores-familiares"></div>
+
+    <div id="errores-edades">
+        
+    </div>
+    
+    <div id="calculos" class="oculto">
+        <label>La mayor edad es: </label>
+        <input id="mayor-edad"/>
+        <div></div>
+        <label>La menor edad es:</label>
+        <input id="menor-edad"/>
+        <div></div>
+        <label>La edad promedio es: </label>
+        <input id="promedio-edad"/>
+    </div>
+
+    <input type="button" id="boton-resetear" value="Volver a empezar" class="oculto"/>
+    <div></div>
+    <input type="button" id="boton-agregar-salarios" value="Agregar salarios" class="oculto"/>
+    
+    <div id="salarios"></div>
+    <div></div>
+    
+    <input type="button" id="calcular-salarios" value="Calcular salarios" class="oculto"/>
+
+    <div id="errores-salarios">
+    </div>
+
+    <div id="calculos-salarios" class="oculto">
+        <label>El mayor salario es: </label>
+        <input id="mayor-salario"/>
+        <div></div>
+        <label>El menor salario es:</label>
+        <input id="menor-salario"/>
+        <div></div>
+        <label>El salario promedio es: </label>
+        <input id="promedio-salario"/>   
+    </div>  
+
+    <input type="button" id="quitar-salarios" class="oculto" value="Quitar salarios"/>
+    
+
+
+
+    
+<script src='tarea-clase-6.js'></script>     
+<script src="pruebas.js"></script> 
+</body>
+</html>
