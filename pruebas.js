@@ -16,3 +16,61 @@ function probarValidarNumeroFamiliares() {
         "validarNumeroFamiliares no funcionó con un número válido"
     );
 }
+
+function probarValidarEdades() {
+    console.assert(
+        validarEdades(["40", "30", "50"]) === 0,
+        "validarEdades no funcionó con valores válidos"
+    );
+
+    console.assert(
+        validarEdades(["40", "", "50"]) === "error",
+        "validarEdades no comprobó que un valor era inválido"
+    );
+
+    console.assert(
+        validarEdades(["40", "a", "50"]) === "error",
+        "validarEdades no comprobó que un valor era inválido"
+    );
+
+    console.assert(
+        validarEdades(["40", "9999", "50"]) === "error",
+        "validarEdades no comprobó que un valor era inválido"
+    );
+
+    console.assert(
+        validarEdades(["40", "0", "50"]) === "error",
+        "validarEdades no comprobó que un valor era inválido"
+    );
+}
+
+function probarValidarSalarios() {
+    console.assert(
+        validarSalarios(["40", "30", "50"]) === 0,
+        "validarSalarios no funcionó con valores válidos"
+    );
+
+    console.assert(
+        validarSalarios(["4000", "", "50000"]) === "error",
+        "validarSalarios no comprobó que un valor era inválido"
+    );
+
+    console.assert(
+        validarSalarios(["4000", "a", "50000"]) === "error",
+        "validarSalarios no comprobó que un valor era inválido"
+    );
+
+    console.assert(
+        validarSalarios(["400", "999999999999", "50000"]) === "error",
+        "validarSalarios no comprobó que un valor era inválido"
+    );
+
+    console.assert(
+        validarSalarios(["40", "0", "50"]) === "error",
+        "validarSalarios no comprobó que un valor era inválido"
+    );
+}
+
+probarValidarNumeroFamiliares();
+probarValidarEdades();
+probarValidarSalarios();

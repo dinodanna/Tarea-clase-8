@@ -20,6 +20,7 @@ botonAceptar.onclick = function () {
     resetear();
     errores = validarNumeroFamiliares(numeroFamiliares.value);
     const $erroresAnteriores = document.querySelector("#errores-familiares li");
+
     if ($erroresAnteriores) {
         $erroresAnteriores.remove();
     }
@@ -39,9 +40,10 @@ botonAceptar.onclick = function () {
 $botonCalcular.onclick = function () {
     eliminarErroresEdades();
     const $listaFamiliares = document.querySelectorAll(".familiar");
-    numeroErrores = validarEdades($listaFamiliares);
+    listaEdades = crearArray($listaFamiliares);
+
+    numeroErrores = validarEdades(listaEdades);
     if (!numeroErrores) {
-        let listaEdades = Array.from($listaFamiliares);
         document.querySelector("#mayor-edad").value =
             calcularMayorEdad(listaEdades);
         document.querySelector("#menor-edad").value =
@@ -52,6 +54,8 @@ $botonCalcular.onclick = function () {
         mostrarElemento($botonResetear);
         mostrarElemento(document.querySelector("#boton-agregar-salarios"));
     } else {
+        crearListaErroresEdades(listaEdades);
+        resaltarErroresEdades($listaFamiliares);
         return;
     }
 };
@@ -69,13 +73,18 @@ Punto bonus: si hay inputs vacíos, ignorarlos en el cálculo (no contarlos como
 */
 
 $botonSalarios.onclick = function () {
+    borrarSalariosAnteriores();
     agregarSalarios();
     mostrarElemento(document.querySelector("#calcular-salarios"));
 };
 
 $botonCalcularSalarios.onclick = function () {
+    ocultarElemento(document.querySelector("#calculos-salarios"));
+    ocultarElemento($botonQuitarSalarios);
+    eliminarErroresSalarios();
+
     let $listaSalarios = document.querySelectorAll(".familiar-salario");
-    let listaSalarios = Array.from($listaSalarios);
+    let listaSalarios = crearArray($listaSalarios);
     let numeroErrores = validarSalarios(listaSalarios);
 
     if (!numeroErrores) {
@@ -88,6 +97,8 @@ $botonCalcularSalarios.onclick = function () {
             calcularPromedioSalario(listaSalarios);
         mostrarElemento($botonQuitarSalarios);
     } else {
+        crearListaErroresSalarios(listaSalarios);
+        resaltarErroresSalarios($listaSalarios);
         return;
     }
 };
@@ -100,6 +111,7 @@ $botonQuitarSalarios.onclick = function () {
     ocultarElemento(document.querySelector("#calcular-salarios"));
     ocultarElemento(document.querySelector("#calculos-salarios"));
     ocultarElemento($botonQuitarSalarios);
+    eliminarErroresSalarios();
 };
 
 //
@@ -164,18 +176,18 @@ function crearFamiliares() {
 function calcularMayorEdad(array) {
     let mayorEdad = 0;
     for (i = 0; i < array.length; i++) {
-        if (mayorEdad < array[i].value) {
-            mayorEdad = array[i].value;
+        if (mayorEdad < array[i]) {
+            mayorEdad = Number(array[i]);
         }
     }
     return mayorEdad;
 }
 
 function calcularMenorEdad(array) {
-    let menorEdad = array[0];
+    let menorEdad = Number(array[0]);
     for (i = 0; i < array.length; i++) {
-        if (menorEdad > array[i].value) {
-            menorEdad = array[i].value;
+        if (menorEdad > array[i]) {
+            menorEdad = Number(array[i]);
         }
     }
     return menorEdad;
@@ -184,7 +196,7 @@ function calcularMenorEdad(array) {
 function calcularPromedioEdad(array) {
     let totalEdades = 0;
     for (i = 0; i < array.length; i++) {
-        totalEdades += Number(array[i].value);
+        totalEdades += Number(array[i]);
     }
     promedioEdad = (totalEdades / array.length).toFixed(2);
     return promedioEdad;
@@ -210,21 +222,21 @@ function agregarSalarios() {
 function calcularMayorSalario(array) {
     let mayorSalario = 0;
     for (i = 0; i < array.length; i++) {
-        if (mayorSalario < Number(array[i].value)) {
-            mayorSalario = Number(array[i].value);
+        if (mayorSalario < Number(array[i])) {
+            mayorSalario = Number(array[i]);
         }
     }
     return mayorSalario;
 }
 
 function calcularMenorSalario(array) {
-    let menorSalario = Number(array[0].value);
+    let menorSalario = Number(array[0]);
     for (i = 0; i < array.length; i++) {
         if (Number(array[i].value) === 0) {
             continue;
         }
-        if (menorSalario > Number(array[i].value)) {
-            menorSalario = Number(array[i].value);
+        if (menorSalario > Number(array[i])) {
+            menorSalario = Number(array[i]);
         }
     }
     return menorSalario;
@@ -233,10 +245,10 @@ function calcularMenorSalario(array) {
 function calcularPromedioSalario(array) {
     let totalSalarios = 0;
     for (i = 0; i < array.length; i++) {
-        if (array[i].value === 0) {
+        if (array[i] === 0) {
             continue;
         }
-        totalSalarios += Number(array[i].value);
+        totalSalarios += Number(array[i]);
     }
     let promedioSalario = (totalSalarios / array.length).toFixed(2);
     return promedioSalario;
@@ -283,7 +295,102 @@ function eliminarErroresSalarios() {
     }
 }
 
+function crearArray(fuente) {
+    array = [];
+    for (let i = 0; i < fuente.length; i++) {
+        array.push(fuente[i].value);
+    }
+    return array;
+}
+
+function crearListaErroresEdades(edades) {
+    edades.forEach(function (valor, indice) {
+        if (edades[indice] === "0") {
+            let li = document.createElement("li");
+            li.innerText = "La edad ingresada no puede ser 0";
+            document.querySelector("#errores-edades").appendChild(li);
+            return;
+        }
+
+        if (edades[indice].length > 3) {
+            let li = document.createElement("li");
+            li.innerText = "La edad ingresada no puede tener mas de 3 dígitos";
+            document.querySelector("#errores-edades").appendChild(li);
+            return;
+        }
+        if (!/^[0-9]+$/.test(edades[indice])) {
+            let li = document.createElement("li");
+            li.innerText = "El campo edad solo puede contener números";
+            document.querySelector("#errores-edades").appendChild(li);
+            return;
+        }
+    });
+}
+
+function crearListaErroresSalarios(salarios) {
+    salarios.forEach(function (valor, indice) {
+        if (salarios[indice] === "0") {
+            let li = document.createElement("li");
+            li.innerText = "El monto ingresado no puede ser 0";
+            document.querySelector("#errores-salarios").appendChild(li);
+            return;
+        }
+
+        if (salarios[indice].length > 10) {
+            let li = document.createElement("li");
+            li.innerText = "El monto ingresado no puede superar los 10 dígitos";
+            document.querySelector("#errores-salarios").appendChild(li);
+            return;
+        }
+
+        if (!/^[0-9]+$/.test(salarios[indice])) {
+            let li = document.createElement("li");
+            li.innerText = "El campo de salario solo puede contener números";
+            document.querySelector("#errores-salarios").appendChild(li);
+            return;
+        }
+    });
+}
+
+function resaltarErroresEdades(edades) {
+    for (let i = 0; i < edades.length; i++) {
+        if (edades[i].value === "0") {
+            edades[i].classList.add("error");
+            continue;
+        }
+        if (edades[i].value.length > 3) {
+            edades[i].classList.add("error");
+            continue;
+        }
+        if (!/^[0-9]+$/.test(edades[i].value)) {
+            edades[i].classList.add("error");
+            continue;
+        }
+    }
+}
+
+function resaltarErroresSalarios(salarios) {
+    for (let i = 0; i < salarios.length; i++) {
+        if (salarios[i].value === "0") {
+            salarios[i].classList.add("error");
+            continue;
+        }
+        if (salarios[i].value.length > 10) {
+            salarios[i].classList.add("error");
+            continue;
+        }
+        if (!/^[0-9]+$/.test(salarios[i].value)) {
+            salarios[i].classList.add("error");
+            continue;
+        }
+    }
+}
+
+//
+//
 //Validaciones
+//
+//
 
 function validarNumeroFamiliares(numero) {
     if (Number(numero) <= 0) {
@@ -297,71 +404,49 @@ function validarNumeroFamiliares(numero) {
     }
 }
 
-function validarEdades(edades) {
-    listaEdades = Array.from(edades);
+function validarEdades(arrayEdades) {
     let numeroErrores = 0;
 
-    listaEdades.forEach(function (valor, indice) {
-        if (listaEdades[indice].value === "0") {
-            let li = document.createElement("li");
-            li.innerText = "La edad ingresada no puede ser 0";
-            document.querySelector("#errores-edades").appendChild(li);
+    arrayEdades.forEach(function (valor, indice) {
+        if (arrayEdades[indice] === "0") {
             numeroErrores++;
-            listaEdades[indice].classList.add("error");
-            return;
         }
-        if (listaEdades[indice].value.length > 3) {
-            let li = document.createElement("li");
-            li.innerText = "La edad ingresada no puede tener mas de 3 dígitos";
-            document.querySelector("#errores-edades").appendChild(li);
+        if (arrayEdades[indice].length > 3) {
             numeroErrores++;
-            listaEdades[indice].classList.add("error");
-            return;
         }
-        if (!/^[0-9]+$/.test(listaEdades[indice].value)) {
-            let li = document.createElement("li");
-            li.innerText = "El campo edad solo puede contener números";
-            document.querySelector("#errores-edades").appendChild(li);
+        if (!/^[0-9]+$/.test(arrayEdades[indice])) {
             numeroErrores++;
-            listaEdades[indice].classList.add("error");
-            return;
         }
     });
-    return numeroErrores;
+    if (numeroErrores === 0) {
+        return numeroErrores;
+    } else {
+        return "error";
+    }
 }
 
-function validarSalarios(salarios) {
-    eliminarErroresSalarios();
-    listaSalarios = Array.from(salarios);
+function validarSalarios(arraySalarios) {
     let numeroErrores = 0;
 
-    listaSalarios.forEach(function (valor, indice) {
-        if (listaSalarios[indice].value === "0") {
-            let li = document.createElement("li");
-            li.innerText = "El monto ingresado no puede ser 0";
-            document.querySelector("#errores-salarios").appendChild(li);
+    arraySalarios.forEach(function (valor, indice) {
+        if (arraySalarios[indice] === "0") {
             numeroErrores++;
-            listaSalarios[indice].classList.add("error");
             return;
         }
 
-        if (listaSalarios[indice].value.length > 10) {
-            let li = document.createElement("li");
-            li.innerText = "El monto ingresado no puede superar los 10 dígitos";
-            document.querySelector("#errores-salarios").appendChild(li);
+        if (arraySalarios[indice].length > 10) {
             numeroErrores++;
-            listaSalarios[indice].classList.add("error");
             return;
         }
 
-        if (!/^[0-9]+$/.test(listaSalarios[indice].value)) {
-            let li = document.createElement("li");
-            li.innerText = "El campo de salario solo puede contener números";
-            document.querySelector("#errores-salarios").appendChild(li);
+        if (!/^[0-9]+$/.test(arraySalarios[indice])) {
             numeroErrores++;
-            listaSalarios[indice].classList.add("error");
             return;
         }
     });
-    return numeroErrores;
+    if (numeroErrores === 0) {
+        return numeroErrores;
+    } else {
+        return "error";
+    }
 }
