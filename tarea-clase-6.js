@@ -14,7 +14,6 @@ const $botonResetear = document.querySelector("#boton-resetear");
 const $botonSalarios = document.querySelector("#boton-agregar-salarios");
 const $botonCalcularSalarios = document.querySelector("#calcular-salarios");
 const $botonQuitarSalarios = document.querySelector("#quitar-salarios");
-const $listaEdades = document.querySelectorAll(".familiar");
 
 botonAceptar.onclick = function () {
     resetear();
@@ -40,7 +39,7 @@ botonAceptar.onclick = function () {
 $botonCalcular.onclick = function () {
     eliminarErroresEdades();
     const $listaFamiliares = document.querySelectorAll(".familiar");
-    listaEdades = crearArray($listaFamiliares);
+    const listaEdades = crearArray($listaFamiliares);
 
     numeroErrores = validarEdades(listaEdades);
     if (!numeroErrores) {
@@ -75,7 +74,7 @@ Punto bonus: si hay inputs vacíos, ignorarlos en el cálculo (no contarlos como
 $botonSalarios.onclick = function () {
     borrarSalariosAnteriores();
     agregarSalarios();
-    mostrarElemento(document.querySelector("#calcular-salarios"));
+    mostrarElemento($botonCalcularSalarios);
 };
 
 $botonCalcularSalarios.onclick = function () {
@@ -104,23 +103,17 @@ $botonCalcularSalarios.onclick = function () {
 };
 
 $botonQuitarSalarios.onclick = function () {
-    for (i = 0; i < document.querySelectorAll(".familiar-salario").length; i) {
-        document.querySelectorAll(".familiar-salario")[i].remove();
-        document.querySelectorAll(".label-salario")[i].remove();
+    const $listaSalarios = document.querySelectorAll(".familiar-salario");
+    const $labelsSalarios = document.querySelectorAll(".label-salario");
+    for (let i = 0; i < $listaSalarios.length; i++) {
+        $listaSalarios[i].remove();
+        $labelsSalarios[i].remove();
     }
-    ocultarElemento(document.querySelector("#calcular-salarios"));
+    ocultarElemento($botonCalcularSalarios);
     ocultarElemento(document.querySelector("#calculos-salarios"));
     ocultarElemento($botonQuitarSalarios);
     eliminarErroresSalarios();
 };
-
-//
-//
-//
-//Funciones
-//
-//
-//
 
 function mostrarElemento(element) {
     element.className = "";
@@ -131,20 +124,21 @@ function ocultarElemento(element) {
 }
 
 function resetear() {
-    if (document.querySelectorAll(".familiar").length > 0) {
-        for (i = 0; i < document.querySelectorAll(".familiar").length; i) {
-            document.querySelectorAll(".familiar")[i].remove();
-            document.querySelectorAll(".label")[i].remove();
+    const $listaFamiliares = document.querySelectorAll(".familiar");
+    const $labelsFamiliares = document.querySelectorAll(".label");
+    const $listaSalarios = document.querySelectorAll(".familiar-salario");
+    const $labelsSalarios = document.querySelectorAll(".label-salario");
+
+    if ($listaFamiliares.length > 0) {
+        for (let i = 0; i < $listaFamiliares.length; i++) {
+            $listaFamiliares[i].remove();
+            $labelsFamiliares[i].remove();
         }
     }
-    if (document.querySelectorAll(".familiar-salario").length > 0) {
-        for (
-            i = 0;
-            i < document.querySelectorAll(".familiar-salario").length;
-            i
-        ) {
-            document.querySelectorAll(".familiar-salario")[i].remove();
-            document.querySelectorAll(".label-salario")[i].remove();
+    if ($listaFamiliares.length > 0) {
+        for (let i = 0; i < $listaSalarios.length; i++) {
+            $listaSalarios[i].remove();
+            $labelsSalarios[i].remove();
         }
     }
     ocultarElemento(document.querySelector("#calculos"));
@@ -158,7 +152,7 @@ function resetear() {
 }
 
 function crearFamiliares() {
-    for (i = 0; i < numeroFamiliares.value; i++) {
+    for (let i = 0; i < numeroFamiliares.value; i++) {
         const $formulario = document.querySelector("#calculo-integrantes");
         const $division = document.createElement("div");
         const $label = document.createElement("label");
@@ -173,39 +167,10 @@ function crearFamiliares() {
     }
 }
 
-function calcularMayorEdad(array) {
-    let mayorEdad = 0;
-    for (i = 0; i < array.length; i++) {
-        if (mayorEdad < array[i]) {
-            mayorEdad = Number(array[i]);
-        }
-    }
-    return mayorEdad;
-}
-
-function calcularMenorEdad(array) {
-    let menorEdad = Number(array[0]);
-    for (i = 0; i < array.length; i++) {
-        if (menorEdad > array[i]) {
-            menorEdad = Number(array[i]);
-        }
-    }
-    return menorEdad;
-}
-
-function calcularPromedioEdad(array) {
-    let totalEdades = 0;
-    for (i = 0; i < array.length; i++) {
-        totalEdades += Number(array[i]);
-    }
-    promedioEdad = (totalEdades / array.length).toFixed(2);
-    return promedioEdad;
-}
-
 function agregarSalarios() {
     borrarSalariosAnteriores();
     $divSalarios = document.querySelector("#salarios");
-    for (i = 0; i < numeroFamiliares.value; i++) {
+    for (let i = 0; i < numeroFamiliares.value; i++) {
         const $label = document.createElement("label");
         const $input = document.createElement("input");
         const $division = document.createElement("div");
@@ -217,41 +182,6 @@ function agregarSalarios() {
         $divSalarios.appendChild($input);
         $divSalarios.appendChild($division);
     }
-}
-
-function calcularMayorSalario(array) {
-    let mayorSalario = 0;
-    for (i = 0; i < array.length; i++) {
-        if (mayorSalario < Number(array[i])) {
-            mayorSalario = Number(array[i]);
-        }
-    }
-    return mayorSalario;
-}
-
-function calcularMenorSalario(array) {
-    let menorSalario = Number(array[0]);
-    for (i = 0; i < array.length; i++) {
-        if (Number(array[i].value) === 0) {
-            continue;
-        }
-        if (menorSalario > Number(array[i])) {
-            menorSalario = Number(array[i]);
-        }
-    }
-    return menorSalario;
-}
-
-function calcularPromedioSalario(array) {
-    let totalSalarios = 0;
-    for (i = 0; i < array.length; i++) {
-        if (array[i] === 0) {
-            continue;
-        }
-        totalSalarios += Number(array[i]);
-    }
-    let promedioSalario = (totalSalarios / array.length).toFixed(2);
-    return promedioSalario;
 }
 
 function borrarSalariosAnteriores() {
@@ -273,7 +203,7 @@ function eliminarErroresEdades() {
     erroresEdades = document.querySelectorAll("#errores-edades li");
     inputsEdades = document.querySelectorAll(".familiar");
 
-    inputsEdades.forEach(function (v, i) {
+    inputsEdades.forEach(function (_, i) {
         inputsEdades[i].classList.remove("error");
     });
 
@@ -286,7 +216,7 @@ function eliminarErroresSalarios() {
     erroresSalarios = document.querySelectorAll("#errores-salarios li");
     inputsSalarios = document.querySelectorAll(".familiar-salario");
 
-    inputsSalarios.forEach(function (v, i) {
+    inputsSalarios.forEach(function (_, i) {
         inputsSalarios[i].classList.remove("error");
     });
 
@@ -295,24 +225,24 @@ function eliminarErroresSalarios() {
     }
 }
 
-function crearArray(fuente) {
-    array = [];
-    for (let i = 0; i < fuente.length; i++) {
-        array.push(fuente[i].value);
+function crearArray(lista) {
+    const array = [];
+    for (let i = 0; i < lista.length; i++) {
+        array.push(Number(lista[i].value));
     }
     return array;
 }
 
 function crearListaErroresEdades(edades) {
-    edades.forEach(function (valor, indice) {
-        if (edades[indice] === "0") {
+    edades.forEach(function (_, indice) {
+        if (edades[indice] === 0) {
             let li = document.createElement("li");
             li.innerText = "La edad ingresada no puede ser 0";
             document.querySelector("#errores-edades").appendChild(li);
             return;
         }
 
-        if (edades[indice].length > 3) {
+        if (String(edades[indice]).length > 3) {
             let li = document.createElement("li");
             li.innerText = "La edad ingresada no puede tener mas de 3 dígitos";
             document.querySelector("#errores-edades").appendChild(li);
@@ -328,15 +258,15 @@ function crearListaErroresEdades(edades) {
 }
 
 function crearListaErroresSalarios(salarios) {
-    salarios.forEach(function (valor, indice) {
-        if (salarios[indice] === "0") {
+    salarios.forEach(function (_, indice) {
+        if (salarios[indice] === 0) {
             let li = document.createElement("li");
             li.innerText = "El monto ingresado no puede ser 0";
             document.querySelector("#errores-salarios").appendChild(li);
             return;
         }
 
-        if (salarios[indice].length > 10) {
+        if (String(salarios[indice]).length > 10) {
             let li = document.createElement("li");
             li.innerText = "El monto ingresado no puede superar los 10 dígitos";
             document.querySelector("#errores-salarios").appendChild(li);
@@ -383,70 +313,5 @@ function resaltarErroresSalarios(salarios) {
             salarios[i].classList.add("error");
             continue;
         }
-    }
-}
-
-//
-//
-//Validaciones
-//
-//
-
-function validarNumeroFamiliares(numero) {
-    if (Number(numero) <= 0) {
-        return "El número de familiares debe ser mayor a 0";
-    }
-
-    if (numero.length > 3) {
-        return "El número de familiares no puede exceder los 3 dígitos";
-    } else {
-        return "";
-    }
-}
-
-function validarEdades(arrayEdades) {
-    let numeroErrores = 0;
-
-    arrayEdades.forEach(function (valor, indice) {
-        if (arrayEdades[indice] === "0") {
-            numeroErrores++;
-        }
-        if (arrayEdades[indice].length > 3) {
-            numeroErrores++;
-        }
-        if (!/^[0-9]+$/.test(arrayEdades[indice])) {
-            numeroErrores++;
-        }
-    });
-    if (numeroErrores === 0) {
-        return numeroErrores;
-    } else {
-        return "error";
-    }
-}
-
-function validarSalarios(arraySalarios) {
-    let numeroErrores = 0;
-
-    arraySalarios.forEach(function (valor, indice) {
-        if (arraySalarios[indice] === "0") {
-            numeroErrores++;
-            return;
-        }
-
-        if (arraySalarios[indice].length > 10) {
-            numeroErrores++;
-            return;
-        }
-
-        if (!/^[0-9]+$/.test(arraySalarios[indice])) {
-            numeroErrores++;
-            return;
-        }
-    });
-    if (numeroErrores === 0) {
-        return numeroErrores;
-    } else {
-        return "error";
     }
 }
